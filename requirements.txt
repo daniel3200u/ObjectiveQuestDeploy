@@ -1,15 +1,3 @@
-fastapi==0.111.0
-uvicorn==0.23.2
-scikit-learn==1.5.2
-numpy==1.25.2
-scipy==1.10.1
-pandas==2.1.1
-Sastrawi==1.0.1
-joblib==1.3.2
-catboost==1.2.8
-lightgbm==4.6.0
-xgboost==2.0.3
-nltk==3.9.1
-gdown==5.2.0
-setuptools
-wheel
+version https://git-lfs.github.com/spec/v1
+oid sha256:56856de6c3ecbf1ba384a1710a9210a481ee49a8bf2dc67fe32df80880087b86
+size 229
