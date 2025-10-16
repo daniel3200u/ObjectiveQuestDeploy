@@ -1,15 +1,6 @@
-# Folder & file sementara
-__pycache__/
-*.log
-*.tmp
-*.DS_Store
-
-# Model besar
 *.cbm
 *.pkl
 *.json
 *.txt
-
-# Virtual environment
+__pycache__/
 venv/
-.env/
