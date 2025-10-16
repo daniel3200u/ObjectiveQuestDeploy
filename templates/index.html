@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediksi Lama Hukuman</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 450px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: none;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+            width: 100%;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border: 1px solid #b2dfdb;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #333;
+        }
+        .download {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .download a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .download a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediksi Lama Hukuman</h1>
+        <div class="download">
+            <a href="https://drive.google.com/file/d/11fEU3SuBKPg2KltZ_oIdTRL-nP_-Psvz/view?usp=sharing" target="_blank">
+                Unduh contoh file .txt di sini
+            </a>
+        </div>
+        <textarea id="text_input" placeholder="Masukkan teks dokumen hukum..."></textarea>
+        <button onclick="predict()">Prediksi dari Teks</button>
+        <input type="file" id="file_input" accept=".txt">
+        <button onclick="predictFile()">Prediksi dari File</button>
+        <div class="result" id="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function predict() {
+            const text = document.getElementById("text_input").value;
+            const resultDiv = document.getElementById("result");
+            if (!text) {
+                alert("Masukkan teks terlebih dahulu!");
+                return;
+            }
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = `<b>CatBoost:</b> ${data.catboost_pred}<br><b>XGBoost:</b> ${data.xgboost_pred}<br><b>Prediksi Ensemble:</b> ${data.final_weighted_pred}`;
+            } catch (error) {
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = "Terjadi kesalahan saat memproses prediksi.";
+                console.error(error);
+            }
+        }
+
+        async function predictFile() {
+            const fileInput = document.getElementById("file_input");
+            const file = fileInput.files[0];
+            const resultDiv = document.getElementById("result");
+            if (!file) {
+                alert("Pilih file .txt terlebih dahulu!");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("file", file);
+            try {
+                const response = await fetch("/predict_file", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                resultDiv.style.display = "block";
+                if (data.error) {
+                    resultDiv.innerHTML = data.error;
+                } else {
+                    resultDiv.innerHTML = `<b>File:</b> ${data.filename}<br><b>CatBoost:</b> ${data.catboost_pred}<br><b>XGBoost:</b> ${data.xgboost_pred}<br><b>Prediksi Ensemble:</b> ${data.final_weighted_pred}`;
+                }
+            } catch (error) {
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = "Terjadi kesalahan saat memproses file.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
